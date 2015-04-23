@@ -6,13 +6,25 @@
 # only then values from $terminfo are valid
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   function zle-line-init() {
+    VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]% %{$reset_color%}"
+    RPS1="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} $EPS1"
+    zle reset-prompt
     echoti smkx
+  }
+  function zle-keymap-select() {
+    VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]% %{$reset_color%}"
+    RPS1="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} $EPS1"
+    zle reset-prompt
   }
   function zle-line-finish() {
     echoti rmkx
   }
   zle -N zle-line-init
+  zle -N zle-keymap-select
   zle -N zle-line-finish
+
+  # Reduce the mode change delay to 0.1 seconds
+  export KEYTIMEOUT=1
 fi
 
 bindkey -v                                            # Use vi key bindings
